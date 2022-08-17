@@ -39,6 +39,37 @@ def handle_hello():
 
     return jsonify(response_body), 200
 
+@app.route('/people', methods=['GET'])
+def getPeople():
+
+    return jsonify({
+        "mensaje":"registro de base de datos depersonajes",
+        "people": []
+    })
+
+@app.route('/people/<int:people_id>',methods=['GET'])
+def getPeople2(people_id):
+    return jsonify({
+        "id": people_id,
+        "mensaje": "informacion del personaje X"
+    })
+
+@app.route('/planets', methods=['GET'])
+def getPlanets():
+
+    return jsonify({
+        "mensaje":"registro de base de datos de planetas",
+        "planets": []
+    })
+
+@app.route('/planets/<int:planets_id>', methods=['GET'])
+def getPlanets2(planets_id):
+
+    return jsonify({
+        "id": planets_id,
+        "mensaje": "informacion del planeta X"
+    })
+ 
 # this only runs if `$ python src/main.py` is executed
 if __name__ == '__main__':
     PORT = int(os.environ.get('PORT', 3000))
