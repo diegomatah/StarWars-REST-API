@@ -41,34 +41,67 @@ def handle_hello():
 
 @app.route('/people', methods=['GET'])
 def getPeople():
-
+    all_people = People.query.all()
+    serializados = list( map( lambda people: people.serialize(), all_people))
     return jsonify({
         "mensaje":"registro de base de datos depersonajes",
-        "people": []
-    })
+        "people": serializados
+    }), 200
 
-@app.route('/people/<int:people_id>',methods=['GET'])
-def getPeople2(people_id):
-    return jsonify({
+@app.route('/onePeople/<int:people_id>',methods=['GET'])
+def onePeople(people_id):
+    one = People.query.filter_by(uid=people_id).first()
+    if (one):
+     return jsonify({
         "id": people_id,
-        "mensaje": "informacion del personaje X"
+        "mensaje": "informacion del personaje",
+        "people": one.serialize()
     })
+    else:
+        return jsonify({
+            "id":people_id,
+            "mensaje": "not found"
+        }),404
 
-@app.route('/planets', methods=['GET'])
-def getPlanets():
-
+@app.route('/planetas', methods=['GET'])
+def getPlanetas():
+    all_planets = Planetas.query.all()
+    serializados2 = list( map( lambda planetas: planetas.serialize(), all_planets))
     return jsonify({
         "mensaje":"registro de base de datos de planetas",
-        "planets": []
-    })
+        "planets": serializados2
+    }), 200
 
-@app.route('/planets/<int:planets_id>', methods=['GET'])
-def getPlanets2(planets_id):
-
-    return jsonify({
+@app.route('/onePlanet/<int:planets_id>', methods=['GET'])
+def onePlanet(planets_id):
+    onePlaneta = Planetas.query.filter_by(uid=planets_id).first()
+    if(onePlaneta):
+     return jsonify({
         "id": planets_id,
-        "mensaje": "informacion del planeta X"
+        "mensaje": "informacion del planeta",
+        "planetas": onePlaneta.serialize()
     })
+    else:
+        return jsonify({
+            "id":planets_id,
+            "mensaje": "not found"
+        }),404
+
+@app.route("/favorite/people/<int:people_id>", methods = ['POST'])
+def postPeopleFav(people_id):
+    body = request.get_json()
+    newFav = FavPeople(user=body['email'], people=people_id)
+    db.session.add(newFav)
+    db.session.commit()
+    return "nuevo favorito agregado"
+
+@app.route("/favorite/planetas/<int:planets_id>", methods = ['POST'])
+def postPlanetsFav(planets_id):
+    bodyplanet = request.get_json()
+    newFavplanet = FavPlanetas(user=bodyplanet['email'], planetas=planets_id)
+    db.session.add(newFavplanet)
+    db.session.commit()
+    return "nuevo planeta favorito agregado"
  
 # this only runs if `$ python src/main.py` is executed
 if __name__ == '__main__':
